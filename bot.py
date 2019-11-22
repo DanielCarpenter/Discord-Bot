@@ -20,9 +20,7 @@ async def on_ready():
 
 @bot.command()
 async def enroll(ctx):
-    if ctx.author in sslist:
-            await ctx.send("{} already enrolled".format(ctx.author))
-    else:
+    if ctx.author not in sslist:
         sslist.append(ctx.author)
         gifted.append(ctx.author)
         await ctx.send('{} enrolled in Secret Santa'.format(ctx.author))
