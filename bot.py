@@ -20,18 +20,24 @@ async def on_ready():
 
 @bot.command()
 async def enroll(ctx):
-    for i in sslist:
-        if(i == ctx.author):
+    if ctx.author in sslist:
             await ctx.send("{} already enrolled".format(ctx.author))
-            print(sslist[0])
-            return
-    sslist.append(ctx.author)
-    gifted.append(ctx.author)
-    await ctx.send('{} enrolled in Secret Santa'.format(ctx.author))
+    else:
+        sslist.append(ctx.author)
+        gifted.append(ctx.author)
+        await ctx.send('{} enrolled in Secret Santa'.format(ctx.author))
+    for member in ctx.message.mentions:
+        if (member not in sslist):
+            sslist.append(member)
+            gifted.append(member)
+            await ctx.send('{} enrolled in Secret Santa'.format(member))
+        else:
+            await ctx.send('{} already enrolled'.format(member))
+
 
 @bot.command()
 async def ss(ctx):
-    if (len(names) < 4):
+    if (len(names) < 3):
         await ctx.send("Insufficient Participants")
     else:
         for i in names:
