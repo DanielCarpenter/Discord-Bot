@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+channels = os.getenv('CHANNELS')
 
 bot = commands.Bot(command_prefix='!')
 
@@ -20,30 +21,33 @@ async def on_ready():
 
 @bot.command()
 async def enroll(ctx):
-    if ctx.author not in sslist:
-        sslist.append(ctx.author)
-        gifted.append(ctx.author)
-        await ctx.send('{} enrolled in Secret Santa'.format(ctx.author))
-    for member in ctx.message.mentions:
-        if (member not in sslist):
-            sslist.append(member)
-            gifted.append(member)
-            await ctx.send('{} enrolled in Secret Santa'.format(member))
-        else:
-            await ctx.send('{} already enrolled'.format(member))
+    if (str(ctx.channel) in channels):
+        if ctx.author not in sslist:
+            sslist.append(ctx.author)
+            gifted.append(ctx.author)
+            await ctx.send('{} enrolled in Secret Santa'.format(ctx.author))
+        for member in ctx.message.mentions:
+            print(member)
+            if (member not in sslist):
+                sslist.append(member)
+                gifted.append(member)
+                await ctx.send('{} enrolled in Secret Santa'.format(member))
+            else:
+                await ctx.send('{} already enrolled'.format(member))
 
 
 @bot.command()
 async def ss(ctx):
-    if (len(names) < 3):
-        await ctx.send("Insufficient Participants")
-    else:
-        for i in names:
-            sslist = copy.copy(names)
-            gifter = sslist.pop(sslist.index(i))
-            giftee = random.choice(list(set(gifted)&set(sslist)))
-            gifted.remove(giftee)
-            await gifter.send('You are gifting {}'.format(giftee))
+    if (str(ctx.channel) in channels):
+        if (len(names) < 3):
+            await ctx.send("Insufficient Participants")
+        else:
+            for i in names:
+                sslist = copy.copy(names)
+                gifter = sslist.pop(sslist.index(i))
+                giftee = random.choice(list(set(gifted)&set(sslist)))
+                gifted.remove(giftee)
+                await gifter.send('You are gifting {}'.format(giftee))
 
 
 
