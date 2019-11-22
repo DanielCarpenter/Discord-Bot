@@ -1,25 +1,45 @@
+# bot.py
 import os
+import random
 import discord
+from discord.ext import commands
+from dotenv import load_dotenv
 
+load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-client = discord.Client()
+bot = commands.Bot(command_prefix='!')
 
-@client.event
-async def on_message(message):
-    # we do not want the bot to reply to itself
-    if message.author == client.user:
-        return
-
-    if message.content.startswith('!hello'):
-        msg = 'Hello {0.author.mention}'.format(message)
-        await client.send_message(message.channel, msg)
-
-@client.event
+sslist = []
+giftee = ['nobody']
+@bot.event
 async def on_ready():
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
+    print(f'{bot.user.name} has connected to Discord!')
 
-client.run(TOKEN)
+@bot.command()
+async def ssenroll(ctx):
+    for i in sslist:
+        if(i == ctx.author):
+            await ctx.send("{} already enrolled".format(ctx.author))
+            return
+    sslist.append(ctx.author)
+    giftee.append(ctx.author)
+    await ctx.send('{} enrolled in Secret Santa'.format(ctx.author))
+
+@bot.command()
+async def ss(ctx):
+    if len(sslist) < 4:
+        await ctx.author.send("Insufficient Participants")
+    else:
+        seed = random.seed()
+        while len(sslist) and len(giftee):
+            gifter = random.randint(0,len(sslist))
+            gifte = gifter
+            while gifte == gifter:
+                gifte = random.randint(0,len(sslist))
+            await sslist.pop(gifter).send('You are gifting {}'.format(giftee.pop(gifte)))
+
+
+
+
+bot.run(TOKEN)
