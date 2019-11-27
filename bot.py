@@ -10,7 +10,7 @@ import database
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-channels = os.getenv('CHANNELS')
+chans = os.getenv('CHANNELS')
 
 bot = commands.Bot(command_prefix='!')
 
@@ -26,7 +26,7 @@ async def on_ready():
 #PUTS PEOPLE INTO SECRET SANTA LIST
 @bot.command()
 async def enroll(ctx):
-    if (str(ctx.channel) in channels):
+    if (str(ctx.channel) in chans):
         if ctx.author not in sslist:
             sslist.append(ctx.author)
             gifted.append(ctx.author)
@@ -44,13 +44,13 @@ async def enroll(ctx):
 #lists those enrolled in secret santa
 @bot.command()
 async def ssp(ctx):
-    if (str(ctx.channel) in channels):
+    if (str(ctx.channel) in chans):
         await ctx.send('{}'.format(enrolled))
 
 #SECRET SANTA PAIRINGs SENT VIA DMs
 @bot.command()
 async def ss(ctx):
-    if (str(ctx.channel) in channels):
+    if (str(ctx.channel) in chans):
         if (len(names) < 3):
             await ctx.send("Insufficient Participants")
         else:
@@ -62,9 +62,19 @@ async def ss(ctx):
                 await gifter.send('You are gifting {}'.format(giftee))
 
 @bot.command()
-async def meet(ctx):
+async def meet(ctx, date, location):
+    meetup = discord.Embed(
+        title = location,
+        description="react to rsvp",
+        colour = discord.Color.dark_gold()
+    )
+
+    meetup.set_author(name="Meet Up on: {}".format(date))
     invited = ctx.message.mentions
     invited.append(ctx.author)
+    for chan in ctx.guild.channels:
+        if (str(chan) == 'schedule'):
+            await chan.send(embed=meetup)
     
 
 
