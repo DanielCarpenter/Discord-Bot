@@ -62,20 +62,22 @@ async def ss(ctx):
                 await gifter.send('You are gifting {}'.format(giftee))
 
 @bot.command()
-async def meet(ctx, date, location):
+async def meet(ctx, date, person, location):
     meetup = discord.Embed(
-        title = location,
-        description="react to rsvp",
+        title = "react to rsvp",
+        description=":regional_indicator_y: for Coming :question: For Maybe :regional_indicator_n: for No",
         colour = discord.Color.dark_gold()
     )
 
-    meetup.set_author(name="Meet Up on: {}".format(date))
+    meetup.set_author(name="Meet Up on: {} at {} {}".format(date, person, location))
     invited = ctx.message.mentions
     invited.append(ctx.author)
     for chan in ctx.guild.channels:
         if (str(chan) == 'schedule'):
             await chan.send(embed=meetup)
-    
-
+            z = ""
+            for member in ctx.message.mentions:
+                z = z + member.mention + " "
+            await chan.send("{}".format(z))
 
 bot.run(TOKEN)
