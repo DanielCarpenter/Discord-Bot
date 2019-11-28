@@ -75,9 +75,7 @@ async def meet(ctx, date, person, location):
     for chan in ctx.guild.channels:
         if (str(chan) == 'schedule'):
             await chan.send(embed=meetup)
-            z = ""
-            for member in ctx.message.mentions:
-                z = z + member.mention + " "
+            z = utility.list2string(ctx.message.mentions)
             await chan.send("{}".format(z))
 
 bot.run(TOKEN)
