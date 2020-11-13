@@ -7,6 +7,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import utility
 import database
+from SecretSanta import SecretSanta
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -14,10 +15,8 @@ chans = os.getenv('CHANNELS')
 
 bot = commands.Bot(command_prefix='!')
 
-sslist = []
-names = sslist
-gifted = []
-enrolled = []
+SS = SecretSanta()
+
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
@@ -27,39 +26,40 @@ async def on_ready():
 @bot.command()
 async def enroll(ctx):
     if (str(ctx.channel) in chans):
-        if ctx.author not in sslist:
-            sslist.append(ctx.author)
-            gifted.append(ctx.author)
-            enrolled.append(str(ctx.author))
-            await ctx.send('{} enrolled in Secret Santa'.format(ctx.author))
-        for member in ctx.message.mentions:
-            if (member not in sslist):
-                sslist.append(member)
-                gifted.append(member)
-                enrolled.append(str(member))
-                await ctx.send('{} enrolled in Secret Santa'.format(member))
-            else:
-                await ctx.send('{} already enrolled'.format(member))
+        SS.addPerson(ctx.message.mentions)
+        await ctx.send('{} enrolled in Secret Santa'.format([person.display_name for person in ctx.message.mentions]))
+
+@bot.command()
+async def previous(ctx):
+    if (str(ctx.channel) in chans):
+        if len(ctx.message.mentions) == 2:
+            SS.updatePrevious(ctx.message.mentions[0], ctx.message.mentions[1])
+            await ctx.message.add_reaction('👍')
+
+
 
 #lists those enrolled in secret santa
 @bot.command()
 async def ssp(ctx):
     if (str(ctx.channel) in chans):
-        await ctx.send('{}'.format(enrolled))
+        await ctx.send('{}'.format(SS.names))
 
 #SECRET SANTA PAIRINGs SENT VIA DMs
 @bot.command()
+async def pair(ctx):
+    SS.pair()
+
+@bot.command()
 async def ss(ctx):
-    if (str(ctx.channel) in chans):
-        if (len(names) < 3):
-            await ctx.send("Insufficient Participants")
-        else:
-            for i in names:
-                sslist = copy.copy(names)
-                gifter = sslist.pop(sslist.index(i))
-                giftee = random.choice(list(set(gifted)&set(sslist)))
-                gifted.remove(giftee)
-                await gifter.send('You are gifting {}'.format(giftee))
+    if SS.success:
+        for gifter, giftee in SS.gifting_map.items():
+                await gifter.disc.send("You are gifting: {}".format(str(giftee)))
+
+@bot.command()
+async def save(ctx):
+    if SS.success:
+        SS.save()
+        await ctx.message.add_reaction('👍')
 
 @bot.command()
 async def meet(ctx, date, person, location):
