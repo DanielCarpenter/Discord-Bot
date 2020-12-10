@@ -1,17 +1,9 @@
 class Person:
-    def __init__(self, discord_map): #add name and discord_map=None for test.py
-        print(discord_map.display_name)
-        if discord_map:
-            self.disc = discord_map
-            self.name = self.disc.display_name
-            self.id = discord_map.id
-            self.gifting = ''
-            self.gifted = ''
-        else:
-            self.name = ''
-            self.gifting = ''
-            self.gifted = ''
-        print(self.disc.display_name)
+    def __init__(self, d_id, d_name): #add name and discord_map=None for test.py
+        self.name = d_name
+        self.id = d_id
+        self.gifting = ''
+        self.gifted = ''
     
     def __eq__(self, other):
         if hasattr(other, 'id'):
@@ -21,7 +13,7 @@ class Person:
         if isinstance(other, int):
             return self.id == other
         if isinstance(other, Person):
-            return self.name == other.name
+            return self.id == other.id
 
     def __hash__(self):
         if hasattr(self, 'id'):
