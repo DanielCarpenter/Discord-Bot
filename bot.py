@@ -6,8 +6,7 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 import utility
-import database
-from SecretSanta import SecretSanta
+from SecretSanta import *
 from SecretSantaManager import SecretSantaManager
 from Person import Person
 
@@ -40,8 +39,8 @@ async def previous(ctx):
 
 
 @bot.command()
-async def ssload(ctx):
-    instance = SS.get_ss_instance(ctx.guild.id)
+async def ssload(ctx, group_name):
+    instance = SS.get_ss_instance(group_name)
     current_year_map, current_year_name = SS.get_ss_instance(ctx.guild.id).load(ctx.guild.id)
     if current_year_map and current_year_name:
         for (gifter, giftee), (gifter_name, giftee_name) in zip(current_year_map.items(), current_year_name.items()):
@@ -56,8 +55,8 @@ async def ssload(ctx):
         await ctx.message.add_reaction('👍')
 
 @bot.command()
-async def notify(ctx, display_name):
-    instance = SS.get_ss_by_display_name(ctx.author, display_name)
+async def notify(ctx, group_name):
+    instance = SS.get_ss_instance(group_name)
     if instance:
         giftee = instance.gifting_map.get(instance.names[instance.names.index(ctx.author.id)])
         if giftee:
@@ -86,6 +85,9 @@ async def ss(ctx):
     if SS.get_ss_instance(ctx.guild.id).success:
         for gifter, giftee in SS.get_ss_instance(ctx.guild.id).gifting_map.items():
                 await gifter.disc.send("You are gifting: {}".format(str(giftee)))
+        await ctx.message.add_reaction('👍')
+    else:
+        await ctx.message.add_reaction(':thumbsdown:')
 
 @bot.command()
 async def save(ctx):
