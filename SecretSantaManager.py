@@ -3,6 +3,7 @@ from Person import Person
 import os
 import pathlib
 import json
+import datetime
 
 class SecretSantaManager:
     def __init__(self):
@@ -12,72 +13,96 @@ class SecretSantaManager:
         if not self.SecretSantaSessions.get(group_name):
             self.SecretSantaSessions[group_name] = SecretSanta(group_name)
         return self.SecretSantaSessions.get(group_name)
+    
+    
+    def enroll(self, group_name, people):
+        if isinstance(people, list):
+            self.get_ss_instance(group_name).addPerson([person.id for person in people])
+        else:
+            self.get_ss_instance(group_name).addPerson(people.id)
+    
+    
+    def remove(self, group_name, people):
+        if isinstance(people, list):
+            self.get_ss_instance(group_name).remPerson([person.id for person in people])
+        else:
+            self.get_ss_instance(group_name).remPerson(people.id)
+    
+
+    def setPrevious(self, group_name, people):
+        if isinstance(people, list):
+            self.get_ss_instance(group_name).setPrevious([person.id for person in people])
+        else:
+            self.get_ss_instance(group_name).setPrevious(people.id)
 
     
-    def save(group, object_to_save, fileName, year):
-        path = "data/{}/{}/".format(group, year)
-        pathlib.Path(path).mkdir(parents=True, exist_ok=True)
-        with open(path + "{}.json".format(fileName), 'w') as fp:
-            json.dump(object_to_save, fp)
-            fp.close()
-        
-
-    def load(group, fileName, year):
-        if os.path.isfile("data/{}/{}/{}.json".format(group, year, fileName)):
-            with open("data/{}/{}/{}.json".format(group, year, fileName)) as file_to_load:
-                data = file_to_load.read()
-                file_to_load.close()
-                return json.loads(data)
-        return None
-
-
-    def save_instance(self):
+    def load_previous_pairings_history(self, group_name, prior_pairings_to_load=1):
         current_year = datetime.date.today().year 
-        save_file = {gifter.name:giftee.name for (gifter, giftee) in self.gifting_map.items()}
-        self.save(save_file, "names", current_year)
-
-
-
-    def load_instance(self, fileName, year):
-        current_year = datetime.date.today().year 
-        if os.path.isfile("data/{}/{}/{}.json".format(self.group, year, fileName)):
-            with open("data/{}/{}/{}.json".format(self.group, year, fileName)) as file_to_load:
-                data = file_to_load.read()
-                file_to_load.close()
-                self.sent = json.loads(data)
-        for year in range(current_year - self.years_to_count_previous, current_year):
-            if os.path.isdir("data/{}/{}/".format(self.group, year)):
-                with open("data/{}/{}/ids.json".format(self.group, year)) as previous_map:
+        instance = self.get_ss_instance(group_name)
+        for year in range(current_year - prior_pairings_to_load, current_year):
+            if os.path.isdir("data/{}/{}/".format(group_name, year)):
+                with open("data/{}/{}/ids.json".format(group_name, year)) as previous_map:
                     data = previous_map.read()
                     previous_map.close()
-                    temp_map = json.loads.data()
+                    temp_map = json.loads(data)
                     for gifter, giftee in temp_map.items():
-                        if gifter in self.previous_gifting_map:
-                            self.previous_gifting_map.get(gifter).append(giftee)
+                        if gifter in instance.previous_gifting_map:
+                            instance.previous_gifting_map.get(int(gifter)).append(giftee)
                         else:
-                            self.previous_gifting_map.setdefault(gifter, [giftee])
-        if os.path.isdir("{}/{}/".format(self.group, current_year)):
-            with open("data/{}/{}/ids.json".format(self.group, current_year)) as gifting_map:
-                data = gifting_map.read()
-                gifting_map.close()
-            with open("data/{}/{}/names.json".format(self.group, current_year)) as gifting_names:
-                names_data = gifting_names.read()
-                gifting_names.close()
-            current_year_ids = json.loads(data)
-            current_year_names = json.loads(names_data)
-            for (gifter, giftee), (gifter_name, giftee_name) in zip(current_year_ids.items(), current_year_names.items()):
-                pgifter = Person(int(gifter), gifter_name)
-                pgiftee = Person(int(giftee), giftee_name)
-                self.gifting_map[pgifter] = pgiftee
-                self.participant_list.append(pgifter)
-        
-        return self.participant_list
+                            instance.previous_gifting_map.setdefault(int(gifter), [giftee])
+        print(instance.previous_gifting_map)
+
+
+    def matching(self, group_name):
+        instance = self.get_ss_instance(group_name)
+        if instance.matching():
+            save_instance(instance.group, instance.gifting_map)
+        return instance.success
 
     
-    def updateSent(self, giftee):
-        if giftee not in self.sent and giftee in self.gifting_map.values():
-            self.sent.append(self.participant_list[self.participant_list.index(giftee)])
-            with open("data/{}/{}/sent.json".format(self.guild, datetime.date.today().year), 'w') as fp:
-                save_file = [person.id for person in self.sent]
-                json.dump(save_file, fp)
-                fp.close()
+        
+
+
+
+
+#worry about the below later
+def save(group, object_to_save, fileName, year):
+    path = "data/{}/{}/".format(group, year)
+    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+    with open(path + "{}.json".format(fileName), 'w') as fp:
+        json.dump(object_to_save, fp)
+        fp.close()
+    
+
+def load(group, fileName, year):
+    if os.path.isfile("data/{}/{}/{}.json".format(group, year, fileName)):
+        with open("data/{}/{}/{}.json".format(group, year, fileName)) as file_to_load:
+            data = file_to_load.read()
+            file_to_load.close()
+            return json.loads(data)
+    return None
+
+
+def save_instance(group, map):
+    current_year = datetime.date.today().year 
+    save_file = {gifter:giftee for (gifter, giftee) in map.items()}
+    save(group, save_file, "ids", current_year)
+
+
+
+def load_instance(self, instance):
+    current_year = datetime.date.today().year 
+    if os.path.isfile("data/{}/{}/{}.json".format(self.group, current_year, "ids")):
+        with open("data/{}/{}/{}.json".format(self.group, current_year, "ids")) as file_to_load:
+            data = file_to_load.read()
+            file_to_load.close()
+            instance.gifting_map = json.loads(data)
+
+
+def updateSent(giftee, inst):
+    if giftee not in inst.sent and giftee in inst.gifting_map.values():
+        inst.sent.append(inst.participant_list[inst.participant_list.index(giftee)])
+        with open("data/{}/{}/sent.json".format(inst.guild, datetime.date.today().year), 'w') as fp:
+            save_file = [person.id for person in inst.sent]
+            json.dump(save_file, fp)
+            fp.close()

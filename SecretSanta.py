@@ -12,20 +12,28 @@ class SecretSanta:
         self.previous_giftee_weight = 0.1
         self.group = group_name
         self.tries = -1
-        self.years_to_count_previous = 1
+        self.success = False
         self.weight_function = weighted_by_relative_percent
 
 
     def addPerson(self, person):
         if isinstance(person, list):
             for user in person:
-                if user in self.participant_list:
-                    continue
-                else:
-                    self.participant_list.append(person)
+                if user not in self.participant_list:
+                    self.participant_list.append(user)
         else:
             if person not in self.participant_list:
                 self.participant_list.append(person)
+    
+    
+    def remPerson(self, person):
+        if isinstance(person, list):
+            for user in person:
+                if user in self.participant_list:
+                    self.participant_list.remove(person)
+        else:
+            if person in self.participant_list:
+                self.participant_list.remove(person)
 
     
     def setPrevious(self, gifter, previousGifteeList):
@@ -43,12 +51,13 @@ class SecretSanta:
         isMatchingSuccessful = False
         if(self.tries is -1):
             while(not isMatchingSuccessful):
-                not_successful = self.pair()
+                isMatchingSuccessful = self.pair()
         else:
             count = 0
             while(not isMatchingSuccessful and count < self.tries):
-                not_successful = self.pair()
+                isMatchingSuccessful = self.pair()
                 count = count + 1
+        self.success = isMatchingSuccessful
         return isMatchingSuccessful
 
 
@@ -71,7 +80,7 @@ class SecretSanta:
                 if previous and previous in choices:
                     giftee = self.weight_function(choices, previous, self.previous_giftee_weight)
                 else:
-                    giftee = unweighted(choices)
+                    giftee = unweighted(list_of_available_giftees=choices)
             else:
                 return False
             list_of_available_giftees.remove(giftee)

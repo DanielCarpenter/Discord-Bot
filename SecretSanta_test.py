@@ -10,11 +10,11 @@ class TestSecretSanta(unittest.TestCase):
         new_person = 1
         self.SS.addPerson(new_person)
         self.SS.addPerson(new_person)
-        self.assertTrue(len(self.SS.particpant_list) is 1, "Should not add the same person twice")
-        self.assertTrue(self.SS.particpant_list[0] is new_person, "Should add the correct person to the list")
+        self.assertTrue(len(self.SS.participant_list) is 1, "Should not add the same person twice")
+        self.assertTrue(self.SS.participant_list[0] is new_person, "Should add the correct person to the list")
 
     def test_constructor(self):
-        self.assertEquals(self.SS.group, "test", "Correctly assigns group name")
+        self.assertEqual(self.SS.group, "test", "Correctly assigns group name")
     
     def test_set_previous(self):
         self.SS.setPrevious(1, 2)
