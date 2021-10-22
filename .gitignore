@@ -104,5 +104,4 @@ venv.bak/
 .mypy_cache/
 .vscode/settings.json
 test.py
-108820923951378432/
-229332846949433364/
+data/

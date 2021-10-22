@@ -1,9 +1,8 @@
+import json
 class Person:
-    def __init__(self, d_id, d_name): #add name and discord_map=None for test.py
+    def __init__(self, d_id, d_name):
         self.name = d_name
         self.id = d_id
-        self.gifting = ''
-        self.gifted = ''
     
     def __eq__(self, other):
         if hasattr(other, 'id'):
@@ -22,6 +21,10 @@ class Person:
     
     def __repr__(self):
         return str(self.name)
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True, indent=None)
 
 
 
