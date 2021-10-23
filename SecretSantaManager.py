@@ -12,6 +12,7 @@ class SecretSantaManager:
     def get_ss_instance(self, group_name):
         if not self.SecretSantaSessions.get(group_name):
             self.SecretSantaSessions[group_name] = SecretSanta(group_name)
+            self.load_previous_pairings_history(group_name)
         return self.SecretSantaSessions.get(group_name)
     
     
@@ -39,6 +40,7 @@ class SecretSantaManager:
     def load_previous_pairings_history(self, group_name, prior_pairings_to_load=1):
         current_year = datetime.date.today().year 
         instance = self.get_ss_instance(group_name)
+        instance.previous_gifting_map = {}
         for year in range(current_year - prior_pairings_to_load, current_year):
             if os.path.isdir("data/{}/{}/".format(group_name, year)):
                 with open("data/{}/{}/ids.json".format(group_name, year)) as previous_map:
@@ -50,7 +52,6 @@ class SecretSantaManager:
                             instance.previous_gifting_map.get(int(gifter)).append(giftee)
                         else:
                             instance.previous_gifting_map.setdefault(int(gifter), [giftee])
-        print(instance.previous_gifting_map)
 
 
     def matching(self, group_name):
@@ -65,7 +66,6 @@ class SecretSantaManager:
 
 
 
-#worry about the below later
 def save(group, object_to_save, fileName, year):
     path = "data/{}/{}/".format(group, year)
     pathlib.Path(path).mkdir(parents=True, exist_ok=True)
