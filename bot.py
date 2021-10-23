@@ -69,9 +69,11 @@ async def match(ctx, group_name):
 #SECRET SANTA PAIRINGs SENT VIA DMs
 @bot.command()
 async def ssdm(ctx, group_name):
-    if SS.get_ss_instance(ctx.guild.id).success:
-        for gifter, giftee in SS.get_ss_instance(ctx.guild.id).gifting_map.items():
-                await gifter.disc.send("You are gifting: {}".format(str(giftee)))
+    if SS.get_ss_instance(group_name).success:
+        for gifter_id, giftee_id in SS.get_ss_instance(group_name).gifting_map.items():
+                gifter = bot.get_user(gifter_id)
+                giftee = bot.get_user(giftee_id)
+                await gifter.send("You are gifting: {}".format(str(giftee.display_name)))
         await ctx.message.add_reaction('👍')
     else:
         await ctx.message.add_reaction('👎')
