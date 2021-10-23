@@ -42,7 +42,7 @@ class SecretSantaManager:
         instance = self.get_ss_instance(group_name)
         instance.previous_gifting_map = {}
         for year in range(current_year - prior_pairings_to_load, current_year):
-            if os.path.isdir("data/{}/{}/".format(group_name, year)):
+            if os.path.isdir("data/{}/{}/ids.json".format(group_name, year)):
                 with open("data/{}/{}/ids.json".format(group_name, year)) as previous_map:
                     data = previous_map.read()
                     previous_map.close()
