@@ -30,11 +30,11 @@ class SecretSantaManager:
             self.get_ss_instance(group_name).remPerson(people.id)
     
 
-    def setPrevious(self, group_name, people):
+    def setPrevious(self, group_name, gifter, people):
         if isinstance(people, list):
-            self.get_ss_instance(group_name).setPrevious([person.id for person in people])
+            self.get_ss_instance(group_name).setPrevious(gifter, [person.id for person in people])
         else:
-            self.get_ss_instance(group_name).setPrevious(people.id)
+            self.get_ss_instance(group_name).setPrevious(gifter, people.id)
 
     
     def load_previous_pairings_history(self, group_name, prior_pairings_to_load=1):
@@ -42,7 +42,7 @@ class SecretSantaManager:
         instance = self.get_ss_instance(group_name)
         instance.previous_gifting_map = {}
         for year in range(current_year - prior_pairings_to_load, current_year):
-            if os.path.isdir("data/{}/{}/ids.json".format(group_name, year)):
+            if os.path.isfile("data/{}/{}/ids.json".format(group_name, year)):
                 with open("data/{}/{}/ids.json".format(group_name, year)) as previous_map:
                     data = previous_map.read()
                     previous_map.close()

@@ -31,9 +31,8 @@ async def enroll(ctx, group_name):
         await ctx.message.add_reaction('👍')
 
 @bot.command()
-async def previous(ctx):
-    if (str(ctx.channel) in chans):
-        SS.get_ss_instance(ctx.guild.id).updatePrevious(ctx.message.mentions[0], ctx.message.mentions[1:len(ctx.message.mentions)])
+async def previous(ctx, group_name):
+        SS.setPrevious(group_name, ctx.message.mentions[0], ctx.message.mentions[1:len(ctx.message.mentions)])
         await ctx.message.add_reaction('👍')
 
 

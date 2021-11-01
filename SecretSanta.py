@@ -9,7 +9,7 @@ class SecretSanta:
         self.previous_gifting_map = {}
         self.gifting_map = {}
         self.sent = []
-        self.previous_giftee_weight = 0.1
+        self.previous_giftee_weight = 0.0
         self.group = group_name
         self.tries = -1
         self.success = False
