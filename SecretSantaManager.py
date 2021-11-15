@@ -8,6 +8,7 @@ import datetime
 class SecretSantaManager:
     def __init__(self):
         self.SecretSantaSessions = {}
+        self.householdExclusions = self.load_household_exclusions()
 
     def get_ss_instance(self, group_name):
         if not self.SecretSantaSessions.get(group_name):
@@ -17,10 +18,11 @@ class SecretSantaManager:
     
     
     def enroll(self, group_name, people):
+        instance = self.get_ss_instance(group_name)
         if isinstance(people, list):
-            self.get_ss_instance(group_name).addPerson([person.id for person in people])
+            instance.addPerson([person.id for person in people])
         else:
-            self.get_ss_instance(group_name).addPerson(people.id)
+            instance.addPerson(people.id)
     
     
     def remove(self, group_name, people):
@@ -61,10 +63,20 @@ class SecretSantaManager:
         return instance.success
 
     
+    def load_household_exclusions(self): 
+        if os.path.isfile("data/manager/household_exclusions.json":
+            with open("data/manager/household_exclusions.json") as previous_map:
+                data = previous_map.read()
+                previous_map.close()
+                temp_map = json.loads(data)
+                for person, roommate in temp_map.items():
+                    self.householdExclusions.setdefault(int(person), roommate)
+
+
+    def set_household(self, person, household):
+        self.householdExclusions[person.id] = [roommate.id for roommate in household]
         
-
-
-
+#classless helper functions
 
 def save(group, object_to_save, fileName, year):
     path = "data/{}/{}/".format(group, year)

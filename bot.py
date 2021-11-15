@@ -77,4 +77,15 @@ async def ssdm(ctx, group_name):
     else:
         await ctx.message.add_reaction('👎')
 
+
+@bot.command()
+async def household(ctx):
+    if ctx.message.mentions:
+        SS.set_household(ctx.message.mentions[0], ctx.message.mentions[1:len(ctx.message.mentions)])
+        await ctx.message.add_reaction('👍')
+    else:
+        await ctx.message.add_reaction('👎')
+
+
+
 bot.run(TOKEN)
