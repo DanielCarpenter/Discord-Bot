@@ -12,7 +12,7 @@ from Person import Person
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-chans = os.getenv('CHANNELS')
+chans = ("secret-santa", "botcmds")
 
 intents = discord.Intents.default()
 intents.typing = False
