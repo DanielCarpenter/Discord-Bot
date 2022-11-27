@@ -14,7 +14,13 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 chans = os.getenv('CHANNELS')
 
-bot = commands.Bot(command_prefix='!')
+intents = discord.Intents.default()
+intents.typing = False
+intents.presences = True
+intents.members = True
+intents.messages = True
+
+bot = commands.Bot(command_prefix='!'. intents=intents)
 
 SS = SecretSantaManager()
 
