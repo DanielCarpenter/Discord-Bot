@@ -12,7 +12,6 @@ from Person import Person
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-chans = ("secret-santa", "botcmds")
 
 intents = discord.Intents.default()
 intents.typing = False
@@ -32,9 +31,8 @@ async def on_ready():
 #PUTS PEOPLE INTO SECRET SANTA LIST
 @bot.command()
 async def enroll(ctx, group_name):
-    if (str(ctx.channel) in chans):
-        SS.enroll(group_name, ctx.message.mentions)
-        await ctx.message.add_reaction('👍')
+    SS.enroll(group_name, ctx.message.mentions)
+    await ctx.message.add_reaction('👍')
 
 @bot.command()
 async def previous(ctx, group_name):
@@ -65,11 +63,10 @@ async def notify(ctx, group_name):
 #match people in the secret santa group
 @bot.command()
 async def match(ctx, group_name):
-    if (str(ctx.channel) in chans):
-        if SS.matching(group_name):
-            await ctx.message.add_reaction('👍')
-        else:
-            await ctx.message.add_reaction('👎')
+    if SS.matching(group_name):
+        await ctx.message.add_reaction('👍')
+    else:
+        await ctx.message.add_reaction('👎')
 
 #SECRET SANTA PAIRINGs SENT VIA DMs
 @bot.command()
