@@ -20,7 +20,7 @@ intents.presences = True
 intents.members = True
 intents.messages = True
 
-bot = commands.Bot(command_prefix='!'. intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents)
 
 SS = SecretSantaManager()
 
